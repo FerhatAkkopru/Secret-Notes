@@ -26,32 +26,41 @@ master = ""
 
 # encryption method
 def encrypt():
+    global master
     title = title_entry.get()
     message = enter_text.get(1.0, "end-1c")
-    global master
     master = master_entry.get()
     if title == "" or message == "" or master == "":
-        messagebox.showinfo(title="error", message="Please enter all of them", font=FONT)
+        messagebox.showerror(title="Error!", message="Please enter all information.")
     else:
         global enc_message
         enc_message = fernet.encrypt(message.encode())
         print(enc_message)
         with open("secret_code.txt", mode="a") as appended_code:
             appended_code.write(f"Title: {title}\n")
-        with open("secret_code.txt", mode="a") as appended_code:
             appended_code.write(f"Encrypted message: {str(enc_message)}\n")
+        enter_text.delete(1.0, "end-1c")
+        title_entry.delete(0, "end")
+        master_entry.delete(0, "end")
 
 
 # decryption method
+
 def decrypt():
     master1 = master_entry.get()
-    # controlling the master key
-    if master1 == master:
-        global dec_message
-        dec_message = fernet.decrypt(enc_message).decode()
-        messagebox.showinfo(title="secret message", message=dec_message)
+    message = enter_text.get(1.0, "end-1c")
+    if message == "" or master1 == "":
+        messagebox.showerror(title="Error!", message="Please enter all information.")
     else:
-        messagebox.showinfo(title="Wrong master code", message="Master code is not correct")
+        # controlling the master key
+        if master1 == master:
+            global dec_message
+            dec_message = fernet.decrypt(enc_message).decode()
+            enter_text.delete(1.0, "end-1c")
+            enter_text.insert("1.0", dec_message)
+            master_entry.delete(0, "end")
+        else:
+            messagebox.showinfo(title="Wrong master code", message="Master code is not correct")
 
 
 # logo image
